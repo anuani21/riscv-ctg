@@ -1532,7 +1532,7 @@ flw:
     sz: '4'
     val_template: "''"
     load_instr: "flw"
-  rs1_op_data: *all_fregs
+  rs1_op_data: *all_regs_mx0
   rd_op_data: *all_fregs
   xlen: [32,64]
   std_op:
