@@ -1052,7 +1052,7 @@ class Generator():
                                 if self.is_nan_box:
                                     dval = nan_box(instr_dict[i]['rs{0}_nan_prefix'.format(j)],
                                             instr_dict[i]['rs{0}_val'.format(j)],self.flen,self.iflen)
-                                if self.is_sgn_extd:
+                                elif self.is_sgn_extd:
                                     dval = sgn_extd(instr_dict[i]['rs{0}_sgn_prefix'.format(j)],
                                             instr_dict[i]['rs{0}_val'.format(j)],self.flen,self.iflen)
                                 else:
