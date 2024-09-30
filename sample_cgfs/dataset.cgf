@@ -181,7 +181,7 @@ datasets:
     x14: 0
     x15: 0
   
- c_fregs: &c_fregs
+  c_fregs: &c_fregs
     f8: 0
     f9: 0
     f10: 0

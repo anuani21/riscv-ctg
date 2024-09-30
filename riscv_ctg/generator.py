@@ -132,8 +132,8 @@ VALS = {
     'jformat': "['imm_val']",
     'crformat': "['rs1_val', 'rs2_val']",
     'cmvformat': "['rs2_val']",
-    'ciformat': "['rs1_val', 'imm_val']",
-    'cssformat': "['rs2_val', 'imm_val']",
+    'ciformat': "[ 'imm_val','fcsr']",
+    'cssformat': "['rs2_val', 'imm_val','fcsr']",
     'ciwformat': "['imm_val']",
     'clformat': "['rs1_val', 'imm_val', 'fcsr']",
     'cuformat': "['rs1_val']",
@@ -281,7 +281,7 @@ class Generator():
         self.inxFlag = inxFlag
         self.is_sgn_extd = is_sgn_extd
 
-        if opcode in ['sw', 'sh', 'sb', 'lw', 'lhu', 'lh', 'lb', 'lbu', 'ld', 'lwu', 'sd',"jal","beq","bge","bgeu","blt","bltu","bne","jalr","c.jalr","c.jr","flw","fsw","fld","fsd","flh","fsh","c.lbu","c.lhu","c.lh","c.sb","c.sh","c.flw","c.fld","c.flwsp","c.fswsp","c.fldsp","c.fsdsp"]:
+        if opcode in ['sw', 'sh', 'sb', 'lw', 'lhu', 'lh', 'lb', 'lbu', 'ld', 'lwu', 'sd',"jal","beq","bge","bgeu","blt","bltu","bne","jalr","c.jalr","c.jr","flw","fsw","fld","fsd","flh","fsh","c.lbu","c.lhu","c.lh","c.sb","c.sh","c.fld","c.flwsp","c.fswsp","c.fldsp","c.fsdsp"]:
             self.val_vars = self.val_vars + ['ea_align']
         self.template = opnode['template']
         self.opnode = opnode
@@ -812,7 +812,11 @@ class Generator():
                     for y in op_inds[i:]:
                         if op[y] == op[x]:
                             val[ind_dict[y]] = val[ind_dict[x]]
-            if self.is_fext:
+            if self.is_fext and  self.opcode in ['c.flwsp','c.fswsp','c.fldsp','c.fsdsp']:
+                if any([x == 'x2' for x in op]):
+                    cont.append(val)
+                instr_dict.append(self.__cmemsp_instr__(op,val))
+            elif self.is_fext:
                 instr_dict.append(self.__fext_instr__(op,val))
             elif self.opcode == 'c.lui':
                 instr_dict.append(self.__clui_instr__(op,val))
@@ -1078,6 +1082,11 @@ class Generator():
                             if self.is_nan_box:
                                 dval = nan_box(instr_dict[i]['rs{0}_nan_prefix'.format(j)],
                                         instr_dict[i]['rs{0}_val'.format(j)],self.flen,self.iflen)
+                            elif self.is_fext and self.opcode in ['c.flwsp', 'c.fldsp']:
+                                    dval = (instr_dict[i]['rs{0}_val'.format(j)],width)
+                                          # instr_dict[i]['flagreg'] = available_reg[1]
+                            elif self.is_fext and self.opcode in ['c.fswsp', 'c.fsdsp']:
+                                    dval = (instr_dict[i]['rs2_val'.format(j)],width)
                             else:
                                 dval = (instr_dict[i]['rs{0}_val'.format(j)],width)
                             if self.is_fext:
